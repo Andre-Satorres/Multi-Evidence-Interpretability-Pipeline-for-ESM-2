@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Data (heavy — 3.5 GB)
+data/
+
+# Logs
+logs/
+
+# Outputs — keep only lightweight summaries
+outputs/
+
+# Model checkpoints & intermediate shards
+*.pt
+*.pkl
+*.npz
+*.parquet
+*.h5
+*.safetensors
+
+# FASTA & large TSVs
+*.fasta
+
+# MMseqs2 databases
+data/mmseqs/
+
+# Temporary files
+data/tmp/
+*.tmp
+*.swp
+*~
+
+# IDE / editor
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude
+.claude/
