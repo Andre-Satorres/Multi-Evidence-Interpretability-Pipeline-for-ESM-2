@@ -39,7 +39,7 @@ outputs/                    # All pipeline outputs (gitignored)
 
 ## Full Pipeline
 
-### Phase 0 — Dataset Preparation
+### Phase 0 - Dataset Preparation
 
 All scripts under `src/dsPrep/`. Run from the project root.
 
@@ -109,7 +109,7 @@ Writes analysis figures and CSVs to `outputs/figures/` and `outputs/split_analys
 
 ---
 
-### Phase 1 — Embeddings
+### Phase 1 - Embeddings
 
 #### 1.1 (Optional) Create a subset for fast iteration
 
@@ -139,7 +139,7 @@ Each shard contains `{accessions, splits, lengths, embeddings [L,D]}`.
 
 ---
 
-### Phase 2 — SAE Training
+### Phase 2 - SAE Training
 
 ```bash
 python src/stream/train_sae_variants.py \
@@ -176,7 +176,7 @@ Key hyperparameters:
 
 ---
 
-### Phase 3 — Feature–Annotation Alignment
+### Phase 3 - Feature–Annotation Alignment
 
 Two-pass streaming alignment on GPU. Pass 1 collects per-feature activation
 statistics; Pass 2 computes per-protein AUPRC, odds ratio, and enrichment
@@ -263,7 +263,7 @@ python src/stream/feature_alignment_streaming.py \
 
 ---
 
-### Phase 4 — Verification & Figures
+### Phase 4 - Verification & Figures
 
 All scripts under `src/verification/`. Each requires the SAE checkpoint
 and alignment outputs from Phase 3.
@@ -366,13 +366,13 @@ Raw Swiss-Prot files (`proteins.tsv`, `annotations.gff`, `swissprot_features_raw
 
 | File | Description |
 |---|---|
-| `data/proteins.tsv` | Swiss-Prot proteins (accession, sequence, length) — download from UniProt |
+| `data/proteins.tsv` | Swiss-Prot proteins (accession, sequence, length) - download from UniProt |
 | `data/proteins.fasta` | Same proteins in FASTA format |
-| `data/annotations.gff` | Raw UniProt GFF annotations — download from UniProt |
-| `data/annotations_enriched.tsv` | Enriched annotations with `annot_subtype`, `split`, `cluster_id` — Zenodo |
-| `data/clusters.tsv` | MMseqs2 homology clusters — Zenodo |
-| `data/protein_splits.tsv` | Cluster-level train/val/test assignment — Zenodo |
-| `data/proteins_with_split.tsv` | Proteins with split and cluster_id columns — Zenodo |
+| `data/annotations.gff` | Raw UniProt GFF annotations - download from UniProt |
+| `data/annotations_enriched.tsv` | Enriched annotations with `annot_subtype`, `split`, `cluster_id` - Zenodo |
+| `data/clusters.tsv` | MMseqs2 homology clusters - Zenodo |
+| `data/protein_splits.tsv` | Cluster-level train/val/test assignment - Zenodo |
+| `data/proteins_with_split.tsv` | Proteins with split and cluster_id columns - Zenodo |
 | `data/annotations_dedup_with_split.tsv` | Deduplicated annotations with split |
 
 ---
