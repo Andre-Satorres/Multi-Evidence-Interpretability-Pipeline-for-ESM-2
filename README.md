@@ -1,4 +1,4 @@
-# SAE Interpretability Pipeline for ESM-2
+# Multi Evidence Interpretability Pipeline for ESM-2
 
 [![Dataset on Zenodo](https://img.shields.io/badge/dataset-10.5281%2Fzenodo.20379180-blue)](https://doi.org/10.5281/zenodo.20379180)
 [![Results & Logs on Zenodo](https://img.shields.io/badge/results%20%26%20logs-10.5281%2Fzenodo.20384152-blue)](https://doi.org/10.5281/zenodo.20384152)
