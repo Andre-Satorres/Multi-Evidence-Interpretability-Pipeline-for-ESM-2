@@ -1,6 +1,8 @@
 # SAE Interpretability Pipeline for Protein Language Models
 
 [![Dataset on Zenodo](https://img.shields.io/badge/dataset-10.5281%2Fzenodo.20379180-blue)](https://doi.org/10.5281/zenodo.20379180)
+[![Results & Logs on Zenodo](https://img.shields.io/badge/results%20%26%20logs-10.5281%2Fzenodo.20384152-blue)](https://doi.org/10.5281/zenodo.20384152)
+[![Model on HuggingFace](https://img.shields.io/badge/model-aasatorres%2Fesm2--sae--topk--16384--k512-yellow)](https://huggingface.co/aasatorres/esm2-sae-topk-16384-k512)
 
 Residue-level interpretability of ESM-2 embeddings via Sparse Autoencoders (SAEs).
 Aligns learned SAE features against curated Swiss-Prot annotations using a
@@ -354,8 +356,11 @@ python src/verification/enriched_figures.py \
 
 ## Data Files Reference
 
-Processed dataset files are available on Zenodo: [10.5281/zenodo.20379180](https://doi.org/10.5281/zenodo.20379180)
+Processed dataset files: [10.5281/zenodo.20379180](https://doi.org/10.5281/zenodo.20379180)
 (includes `clusters.tsv`, `protein_splits.tsv`, `proteins_with_split.tsv`, `annotations_enriched.tsv`)
+
+Alignment scores & logs: [10.5281/zenodo.20384152](https://doi.org/10.5281/zenodo.20384152)
+(includes `alignment_scores.parquet`, `logs.tar.gz`)
 
 Raw Swiss-Prot files (`proteins.tsv`, `annotations.gff`, `swissprot_features_raw.tsv`) should be downloaded directly from UniProt.
 
