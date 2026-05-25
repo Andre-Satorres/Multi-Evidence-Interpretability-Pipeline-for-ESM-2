@@ -1,0 +1,23 @@
+{
+  "model": "SAE_vanilla",
+  "architecture": "vanilla",
+  "input_dim": 1280,
+  "latent_dim": 8192,
+  "l1_lambda": 0.0003,
+  "l1_warmup_epochs": 2,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.0,
+  "batch_size": 2048,
+  "num_epochs": 5,
+  "topk_k": null,
+  "tsae_lambda": null,
+  "tsae_temp": null,
+  "matryoshka_scales": null,
+  "n_train": 5000,
+  "n_val": 1000,
+  "seed": 42,
+  "amp": true,
+  "amp_dtype": "bfloat16",
+  "compiled": true,
+  "timestamp": "2026-03-29T11:59:36.553800"
+}

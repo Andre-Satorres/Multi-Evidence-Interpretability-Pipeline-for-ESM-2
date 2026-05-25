@@ -1,0 +1,25 @@
+{
+  "model": "SAE_matryoshka",
+  "architecture": "matryoshka",
+  "input_dim": 1280,
+  "latent_dim": 8192,
+  "l1_lambda": 3e-05,
+  "l1_warmup_epochs": 2,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.0,
+  "batch_size": 2048,
+  "num_epochs": 2,
+  "topk_k": null,
+  "tsae_lambda": null,
+  "tsae_temp": null,
+  "matryoshka_scales": [
+    1024,
+    2048,
+    4096,
+    8192
+  ],
+  "n_train": 5000,
+  "n_val": 1000,
+  "seed": 42,
+  "timestamp": "2026-03-28T17:51:05.840178"
+}

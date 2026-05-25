@@ -1,21 +1,6 @@
 """
-enriched_figures.py — PIPLV2 / sae
-====================================
 Generate publication-quality figures for the 53 robust
 feature-annotation pairs from the enriched alignment.
-
-Figures produced
-----------------
-Fig A — Bar chart: top 20 pairs by AUPRC, annotated with n_proteins
-Fig B — Scatter: AUPRC × OR, coloured by annotation category
-Fig C — Heatmap: top pairs (annot_subtype × feature_id, AUPRC)
-Fig D — GTPase spotlight: G1/G2/G3/G4 + Binding site: GTP
-
-Usage
------
-  python src/sae/enriched_figures.py \\
-      --alignment-dir outputs/feature_alignment_enriched2 \\
-      --outdir        outputs/paper_figures_enriched
 """
 
 import sys

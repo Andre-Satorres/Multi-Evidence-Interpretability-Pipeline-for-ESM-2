@@ -1,0 +1,19 @@
+{
+  "feature_id": 5260,
+  "annot_type": "Binding site: GTP",
+  "auprc_mean": 0.4669731265092001,
+  "odds_ratio": 10.527346531833071,
+  "fisher_p": 9.074418472847308e-135,
+  "n_proteins": 50,
+  "pc_top_property": "helix_prop",
+  "pc_top_cohen_d": -0.6217106610704412,
+  "pc_n_strong": 5,
+  "abl_mean_contrast": 1.5889623345434665,
+  "abl_frac_positive": 0.98,
+  "abl_mean_cohen_d": 1.958254958764109,
+  "abl_structural_align": 0.3814807091735413,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.4566000029256066
+}

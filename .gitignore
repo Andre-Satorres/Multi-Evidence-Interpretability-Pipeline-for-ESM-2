@@ -5,16 +5,56 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-# Data (heavy — 3.5 GB)
+# Data (heavy)
 data/
 
 # Logs
 logs/
 
-# Outputs — keep only lightweight summaries
-outputs/
+# Outputs — ignore heavy artifacts, keep lightweight results
+# (must use outputs/* not outputs/ so that child !exceptions work)
+outputs/*
 
-# Model checkpoints & intermediate shards
+# Heavy intermediate dirs — fully ignored
+outputs/subsets/
+outputs/embeddings/
+outputs/feature_alignment_topk512/
+outputs/feature_alignment_topk512_fixed/pass*.pkl
+outputs/feature_alignment_topk512_fixed/pass*.npz
+
+# SAE checkpoints — on HuggingFace; keep only metrics
+outputs/sae_variants/*/checkpoints/
+
+# Allow lightweight result summaries
+!outputs/feature_alignment_topk512_fixed/
+!outputs/feature_alignment_topk512_fixed/*.tsv
+!outputs/feature_alignment_topk512_fixed/*.json
+!outputs/multi_evidence_topk512/
+!outputs/multi_evidence_topk512/**
+!outputs/paper_figures_topk512/
+!outputs/paper_figures_topk512/**
+!outputs/feature_qualitative_topk512/
+!outputs/feature_qualitative_topk512/**
+!outputs/feature_alignment_sparsity/
+!outputs/feature_alignment_sparsity/**
+!outputs/novel_features_enriched/
+!outputs/novel_features_enriched/**
+!outputs/attention_enriched_top/
+!outputs/attention_enriched_top/**
+!outputs/split_analysis/
+!outputs/split_analysis/**
+!outputs/raw_dataset_analysis/
+!outputs/raw_dataset_analysis/**
+!outputs/raw_dataset_stats/
+!outputs/raw_dataset_stats/**
+!outputs/figures/
+!outputs/figures/**
+!outputs/sae_variants/
+!outputs/sae_variants/*/
+!outputs/sae_variants/*/metrics.csv
+!outputs/sae_variants/*/training_log.csv
+
+# Model checkpoints & intermediate shards (heavy — on HuggingFace/Zenodo)
 *.pt
 *.pkl
 *.npz
@@ -48,3 +88,5 @@ Thumbs.db
 
 # Claude
 .claude/
+
+scripts/

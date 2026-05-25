@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-05-19T15:51:14.956910",
+  "n_proteins": 65749,
+  "n_features_eval": 5338,
+  "n_annot_types": 437,
+  "n_robust_pairs": 4,
+  "n_novel_candidates": 151,
+  "topk_k": 512
+}

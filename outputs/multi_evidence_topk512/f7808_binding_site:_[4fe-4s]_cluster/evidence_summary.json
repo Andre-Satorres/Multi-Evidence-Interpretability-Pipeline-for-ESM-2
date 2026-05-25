@@ -1,0 +1,19 @@
+{
+  "feature_id": 7808,
+  "annot_type": "Binding site: [4Fe-4S] cluster",
+  "auprc_mean": 0.9079745427715036,
+  "odds_ratio": 255.80327092974335,
+  "fisher_p": 1.6199397449285359e-133,
+  "n_proteins": 50,
+  "pc_top_property": "disorder_prop",
+  "pc_top_cohen_d": -1.642999403574859,
+  "pc_n_strong": 7,
+  "abl_mean_contrast": 0.9612971146404743,
+  "abl_frac_positive": 0.96,
+  "abl_mean_cohen_d": 6.66281834513267,
+  "abl_structural_align": 0.1880797607794397,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.900435764256474
+}

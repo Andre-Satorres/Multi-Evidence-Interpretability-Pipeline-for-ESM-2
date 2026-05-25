@@ -1,0 +1,19 @@
+{
+  "feature_id": 979,
+  "annot_type": "Transmembrane: Helical; Signal-anchor for type II membrane protein",
+  "auprc_mean": 0.8811209023798838,
+  "odds_ratio": 65.49549071618037,
+  "fisher_p": 0.0,
+  "n_proteins": 50,
+  "pc_top_property": "hydrophobicity",
+  "pc_top_cohen_d": 0.9875345159102535,
+  "pc_n_strong": 5,
+  "abl_mean_contrast": 0.7663833414018154,
+  "abl_frac_positive": 1.0,
+  "abl_mean_cohen_d": 3.11369462461129,
+  "abl_structural_align": 0.25276983436644496,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.7398175001144409
+}

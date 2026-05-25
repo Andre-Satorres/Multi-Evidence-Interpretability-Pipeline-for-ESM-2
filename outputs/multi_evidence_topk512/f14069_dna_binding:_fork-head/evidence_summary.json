@@ -1,0 +1,19 @@
+{
+  "feature_id": 14069,
+  "annot_type": "DNA binding: Fork-head",
+  "auprc_mean": 0.939475341141224,
+  "odds_ratio": 87.46720779220779,
+  "fisher_p": 0.0,
+  "n_proteins": 39,
+  "pc_top_property": "volume",
+  "pc_top_cohen_d": 0.442604201398715,
+  "pc_n_strong": 2,
+  "abl_mean_contrast": 0.5158155437272328,
+  "abl_frac_positive": 1.0,
+  "abl_mean_cohen_d": 1.8770960747567613,
+  "abl_structural_align": 0.022295582685398958,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.9384931429227195
+}

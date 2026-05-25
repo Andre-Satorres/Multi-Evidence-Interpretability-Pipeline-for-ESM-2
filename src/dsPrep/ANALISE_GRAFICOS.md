@@ -35,9 +35,9 @@ Distribuição multimodal:
 
 Interpretação: **3 regimes completamente diferentes**:
 
-1. **pontual (1 aa)** → binding
-2. **local (5–30 aa)** → helix/strand
-3. **global (100+)** → domain
+1. **pontual (1 aa)** = binding
+2. **local (5–30 aa)** = helix/strand
+3. **global (100+)** = domain
 
 > cada método vai performar diferente em cada regime
 

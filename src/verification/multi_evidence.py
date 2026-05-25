@@ -1,6 +1,4 @@
 """
-multi_evidence.py — PIPLV2 / sae
-==================================
 Multi-evidence analysis for top SAE features.
 
 For each candidate (feature_id, annot_type) pair this script computes:
@@ -26,33 +24,6 @@ Evidence layer 3 — Cross-feature convergence
   Identifies other features that co-activate with f on the same proteins
   and same regions.  High co-activation = multiple independent SAE features
   converge on the same biological concept.
-
-Output per pair:
-  outputs/multi_evidence/
-    f{id}_{annot_type}/
-      physicochemical.tsv      property scores inside vs outside
-      physicochemical.png      radar chart + bar comparison
-      ablation.tsv             per-protein ablation delta stats
-      ablation.png             ablation delta positional profile
-      convergence.tsv          co-activating features
-      evidence_summary.json    all scores in one place
-
-  outputs/multi_evidence/
-    full_evidence_matrix.tsv   all pairs × all evidence layers
-
-Usage
------
-  python src/verification/multi_evidence.py \\
-      --alignment    outputs/feature_alignment_streaming/per_annot_summary.tsv \\
-      --all-scores   outputs/feature_alignment_streaming/alignment_scores.parquet \\
-      --checkpoint   outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt \\
-      --esm2-model   esm2_t33_650M_UR50D \\
-      --esm2-layer   33 \\
-      --annotations  data/annotations_dedup_with_split.tsv \\
-      --proteins     data/proteins_with_split.tsv \\
-      --split        test \\
-      --top-pairs    8 \\
-      --activation-threshold 0.1
 """
 
 import sys

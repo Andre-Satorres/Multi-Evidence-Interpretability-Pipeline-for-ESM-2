@@ -1,6 +1,4 @@
 """
-feature_qualitative.py — PIPLV2 / sae
-======================================
 Qualitative analysis of top SAE features from alignment results.
 
 For each candidate (feature_id, annot_type) pair, produces:
@@ -24,27 +22,6 @@ For each candidate (feature_id, annot_type) pair, produces:
 5. Co-annotation analysis — for features that lead multiple annotation
    types, shows overlap between those annotations to characterise polysemy.
    Answers: "is f3087 polysemous or does it capture a general concept?"
-
-Outputs (per feature):
-  outputs/feature_qualitative/
-    f{id}_{annot_type}/
-      positional_profile.png
-      activation_distribution.png
-      top_proteins.tsv
-      protein_heatmap.png
-      summary.json
-
-Usage
------
-  python src/sae/feature_qualitative.py \\
-      --alignment    outputs/feature_alignment/per_annot_summary.tsv \\
-      --esm2-model   esm2_t33_650M_UR50D \\
-      --esm2-layer   33 \\
-      --checkpoint   outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt \\
-      --annotations  data/annotations_dedup_with_split.tsv \\
-      --split        test \\
-      --top-pairs    10        # analyse top-N (feature, annot_type) pairs by AUPRC
-      --activation-threshold 0.1
 """
 
 import sys

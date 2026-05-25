@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-03-26T23:36:35.361820",
+  "checkpoint": "outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt",
+  "annotations": "data/annotations_dedup_with_split.tsv",
+  "split": "test",
+  "n_proteins": 6844,
+  "n_features_analysed": 200,
+  "n_annot_types": 33,
+  "activation_threshold": 0.1,
+  "n_circular_perms": 50,
+  "sae_K": 8192,
+  "sae_D": 1280
+}

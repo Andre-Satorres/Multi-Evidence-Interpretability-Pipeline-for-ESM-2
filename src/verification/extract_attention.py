@@ -1,6 +1,4 @@
 """
-extract_attention.py — PIPLV2 / sae
-=====================================
 Extract per-residue attention evidence from ESM-2 for proteins where
 top SAE features showed strong alignment with biological annotations.
 
@@ -24,38 +22,6 @@ We then run the same alignment pipeline as feature_alignment.py:
   - Compare convergence with SAE feature activations:
     do the heads that attend to annotated regions match the SAE features
     that activate there?
-
-Design
-------
-* Processes only proteins present in the multi-evidence results —
-  no need to re-process all test proteins.
-* One protein at a time through ESM-2 (attention tensors are [L,L] per
-  head per layer — for L=500 that's 33×20×500×500×2 bytes = 330 MB;
-  we compute and immediately aggregate, never store raw attentions).
-* Saves per-protein aggregated attention [L, n_agg_types] in .pt shards
-  using the same format as embedding shards.
-
-Output
-------
-  outputs/attention/
-    test_attn_shard_000.pt       same format as embedding shards but
-                                  "embeddings" key holds [L, n_heads] tensor
-    alignment_scores.parquet     same format as feature_alignment output
-    per_annot_summary.tsv
-    convergence_with_sae.tsv     for each annotation, lists top attention
-                                  head AND top SAE feature side by side
-    run_metadata.json
-
-Usage
------
-  python src/sae/extract_attention.py \\
-      --shard-dir    outputs/embeddings/esm2_650m \\
-      --alignment    outputs/feature_alignment/per_annot_summary.tsv \\
-      --annotations  data/annotations_dedup_with_split.tsv \\
-      --model        facebook/esm2_t33_650M_UR50D \\
-      --split        test \\
-      --top-pairs    8 \\
-      --outdir       outputs/attention
 """
 
 import sys

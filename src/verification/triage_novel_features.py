@@ -1,6 +1,4 @@
 """
-triage_novel_features.py — PIPLV2 / sae
-=========================================
 Triage script: identify SAE features with HIGH causal necessity
 but LOW alignment with any known UniProt annotation.
 
@@ -21,25 +19,6 @@ Step 3 (analysis):
   - Visualise: scatter plot of best_auprc vs ablation_contrast
   - Quadrant of interest: low AUPRC, high ablation = novel concepts
   - Inspect top candidates: what proteins activate them? Any pattern?
-
-Usage
------
-  # Step 1 only (fast, no GPU):
-  python src/sae/triage_novel_features.py \\
-      --alignment-dir outputs/feature_alignment \\
-      --outdir        outputs/novel_features
-
-  # Step 1 + 2 + 3 (full pipeline, needs GPU):
-  python src/sae/triage_novel_features.py \\
-      --alignment-dir  outputs/feature_alignment \\
-      --checkpoint     outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt \\
-      --esm2-model     esm2_t33_650M_UR50D \\
-      --esm2-layer     33 \\
-      --annotations    data/annotations_dedup_with_split.tsv \\
-      --split          test \\
-      --run-ablation \\
-      --top-candidates 30 \\
-      --outdir         outputs/novel_features
 """
 
 import sys

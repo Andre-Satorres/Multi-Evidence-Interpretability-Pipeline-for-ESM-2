@@ -1,13 +1,11 @@
 """
-paper_figures.py — PIPLV2 / sae
-=================================
 Generate all publication-quality figures for the multi-evidence
 PLM interpretability paper.
 
 Figures produced
 ----------------
 Fig 1 — Overview heatmap
-    SAE feature × annotation alignment matrix (AUPRC) for top features.
+    SAE feature x annotation alignment matrix (AUPRC) for top features.
     Rows = annotation types, columns = top SAE features.
 
 Fig 2 — Multi-evidence summary table
@@ -41,20 +39,6 @@ Fig 6a/b/c — Protein case studies (one page per protein)
       - Attention head track (best head)
       - Physicochemical track (most discriminative property)
       - Per-amino-acid table for the annotated region
-
-Usage
------
-  python src/sae/paper_figures.py \\
-      --alignment-dir   outputs/feature_alignment \\
-      --multi-ev-dir    outputs/multi_evidence \\
-      --attention-dir   outputs/attention \\
-      --esm2-model      esm2_t33_650M_UR50D \\
-      --esm2-layer      33 \\
-      --checkpoint      outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt \\
-      --annotations     data/annotations_dedup_with_split.tsv \\
-      --proteins        data/proteins_with_split.tsv \\
-      --split           test \\
-      --outdir          outputs/paper_figures
 """
 
 import sys
@@ -801,8 +785,14 @@ def fig3_convergence(attn_conv, outdir,
     # summary stats
     sae_wins = sum(1 for p in all_points if p["sae_auprc"] > p["attn_auprc"])
     attn_wins = n_pts - sae_wins
+    # Pearson R²
+    from scipy.stats import pearsonr
+    _xs_all = [p["sae_auprc"] for p in all_points]
+    _ys_all = [p["attn_auprc"] for p in all_points]
+    _r, _r_p = pearsonr(_xs_all, _ys_all)
+    _r2 = _r ** 2
     legend_elements.append(mpatches.Patch(color="none",
-                           label=f"n={n_pts}  SAE>{sae_wins}  Attn>{attn_wins}"))
+                           label=f"n={n_pts}  SAE>{sae_wins}  Attn>{attn_wins}  R²={_r2:.2f}"))
 
     ax.legend(handles=legend_elements, loc="upper left",
               frameon=False, fontsize=9, ncol=1,
@@ -811,7 +801,7 @@ def fig3_convergence(attn_conv, outdir,
     ax.set_xlabel("SAE feature AUPRC", fontsize=11)
     ax.set_ylabel("Attention aggregation AUPRC", fontsize=11)
     ax.set_title(f"SAE × Attention convergence  ({n_pts} annotation subtypes)\n"
-                 "(bubble size = convergence score)", fontsize=12)
+                 f"(bubble size = convergence score; Pearson R² = {_r2:.2f})", fontsize=12)
     ax.set_xlim(-0.02, 1.05)
     ax.set_ylim(-0.02, 1.05)
     ax.tick_params(labelsize=10)
@@ -996,13 +986,53 @@ def fig5_layer_attention(attn_scores_df, outdir, sae_summary_df=None):
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    cmap_types = plt.cm.get_cmap("tab10")
-    for i, at in enumerate(top_types):
+    # --- Identify 3 representative subtypes: early, mid, late peaking ---
+    peak_layers = {}
+    for at in top_types:
+        sub = layer_rows[layer_rows["annot_type"] == at].sort_values("layer")
+        if not sub.empty:
+            peak_layers[at] = sub.loc[sub["auprc_mean"].idxmax(), "layer"]
+
+    if peak_layers:
+        sorted_by_peak = sorted(peak_layers.items(), key=lambda x: x[1])
+        # Pick 3 maximally spread: earliest, one near middle, latest
+        # but skip types whose peak is within 3 layers of already-selected
+        highlight_types = [sorted_by_peak[0][0]]  # earliest
+        for at, pk in sorted_by_peak[1:]:
+            if all(abs(pk - peak_layers[h]) >= 3 for h in highlight_types):
+                highlight_types.append(at)
+            if len(highlight_types) == 3:
+                break
+        # Fallback if not enough spread
+        if len(highlight_types) < 3:
+            highlight_types = [sorted_by_peak[0][0],
+                               sorted_by_peak[len(sorted_by_peak)//2][0],
+                               sorted_by_peak[-1][0]]
+            seen = set()
+            highlight_types = [t for t in highlight_types if not (t in seen or seen.add(t))]
+    else:
+        highlight_types = top_types[:3]
+
+    highlight_colors = ["#2166AC", "#D6604D", "#1B7837"]  # blue, red, green
+
+    # --- Plot background types in grey first ---
+    for at in top_types:
+        if at in highlight_types:
+            continue
         sub = (layer_rows[layer_rows["annot_type"] == at]
                .sort_values("layer"))
         if sub.empty:
             continue
-        color = cmap_types(i / max(len(top_types), 1))
+        ax.plot(sub["layer"], sub["auprc_mean"],
+                marker="", lw=1.0, color="#AAAAAA", alpha=0.35, zorder=1)
+
+    # --- Plot highlighted types with bold lines ---
+    for i, at in enumerate(highlight_types):
+        sub = (layer_rows[layer_rows["annot_type"] == at]
+               .sort_values("layer"))
+        if sub.empty:
+            continue
+        color = highlight_colors[i % len(highlight_colors)]
 
         # Shorten label
         short = (at.replace("Transmembrane: ", "TM: ")
@@ -1012,20 +1042,24 @@ def fig5_layer_attention(attn_scores_df, outdir, sae_summary_df=None):
                    .replace("Transit peptide: ", "TP: "))
 
         ax.plot(sub["layer"], sub["auprc_mean"],
-                marker="o", markersize=3, lw=1.5,
-                color=color, label=short, alpha=0.9)
+                marker="o", markersize=4, lw=2.5,
+                color=color, label=short, alpha=1.0, zorder=4)
         # mark the best layer
         best = sub.loc[sub["auprc_mean"].idxmax()]
         ax.scatter(best["layer"], best["auprc_mean"],
-                   s=60, color=color, zorder=5, edgecolors="white", lw=0.8)
+                   s=80, color=color, zorder=5, edgecolors="white", lw=1.0)
         # annotate best layer number with background for readability
         ax.annotate(f"L{int(best['layer'])}",
                     (best["layer"], best["auprc_mean"]),
                     xytext=(4, 6), textcoords="offset points",
-                    fontsize=8.5, color=color, fontweight="bold",
+                    fontsize=9, color=color, fontweight="bold",
                     bbox=dict(boxstyle="round,pad=0.15", fc="white",
-                              ec="none", alpha=0.85),
+                              ec="none", alpha=0.9),
                     zorder=6)
+
+    # Add grey label to legend
+    ax.plot([], [], lw=1.0, color="#AAAAAA", alpha=0.5,
+            label=f"other types (n={len(top_types) - len(highlight_types)})")
 
     # Add median + IQR band across all annotation types
     agg_by_layer = layer_rows.groupby("layer")["auprc_mean"].agg(

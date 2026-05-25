@@ -1,0 +1,19 @@
+{
+  "feature_id": 15450,
+  "annot_type": "Binding site: Mn(2+)",
+  "auprc_mean": 0.6411600975902334,
+  "odds_ratio": 47.080442045746594,
+  "fisher_p": 1.0837163357136892e-109,
+  "n_proteins": 50,
+  "pc_top_property": "charge",
+  "pc_top_cohen_d": -1.5104805359800335,
+  "pc_n_strong": 7,
+  "abl_mean_contrast": 0.9290171166881919,
+  "abl_frac_positive": 1.0,
+  "abl_mean_cohen_d": 4.047406416699838,
+  "abl_structural_align": 0.16045107436767048,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.6133333563804626
+}

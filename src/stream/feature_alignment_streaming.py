@@ -6,29 +6,13 @@ Streaming SAE feature alignment — fully GPU-batched, pass-2 checkpointed every
 Performance design
 ------------------
   - DynamicBatchPrefetcher: buckets proteins by length → ESM-2 batch → SAE batch
-    in a background thread. buffer_size = align_batch_size × 3 so the GPU
+    in a background thread. buffer_size = align_batch_size x 3 so the GPU
     never idles waiting for the prefetcher.
   - compute_alignment_multiprotein: accumulates align_batch_size proteins then
-    does one GPU pass for all features × all annotation types — no per-protein
+    does one GPU pass for all features x all annotation types — no per-protein
     kernel launches.
   - No checkpoint I/O during the run (saves ~1 min/checkpoint at 30 min total).
     Results written once at the end.
-
-Typical throughput on A5500 (24 GB): ~40-80 prot/s, GPU ~70-90%.
-
-Usage
------
-  python src/stream/feature_alignment_streaming.py \
-      --esm2-model  esm2_t33_650M_UR50D \
-      --checkpoint  outputs/sae_runs/latent8192_l1_3e-05_lr_3e-04/checkpoints/best.pt \
-      --annotations data/annotations_enriched.tsv \
-      --fasta       data/proteins.fasta \
-      --split       test \
-      --proteins    data/proteins_with_split.tsv \
-      --all-features \
-      --esm-batch-size   16 \
-      --align-batch-size 128 \
-      --outdir      outputs/feature_alignment_streaming
 """
 
 import sys
@@ -191,13 +175,16 @@ def load_sae_encoder(checkpoint_path, device):
     W_enc = sd["encoder.weight"].float().to(device)
     b_enc = sd["encoder.bias"].float().to(device)
     K, D  = W_enc.shape
-    log.info(f"  SAE: D={D}, K={K} | config: {ckpt.get('config', {})}")
-    return W_enc, b_enc, K, D
+    cfg   = ckpt.get("config", {})
+    topk_k = cfg.get("topk_k", None) if cfg.get("architecture") == "topk" else None
+    log.info(f"  SAE: D={D}, K={K}, topk_k={topk_k} | config: {cfg}")
+    return W_enc, b_enc, K, D, topk_k
 
 
-def encode_residues_batch(emb_list, W_enc, b_enc):
+def encode_residues_batch(emb_list, W_enc, b_enc, topk_k=None):
     """
     emb_list : list of [Li, D] float32 numpy
+    topk_k   : if set, apply TopK sparsity gate (keep only top-k per token)
     Returns  : list of [Li, K] float32 numpy
     One matmul for the whole list.
     """
@@ -206,6 +193,10 @@ def encode_residues_batch(emb_list, W_enc, b_enc):
     with torch.no_grad():
         x_t = torch.from_numpy(x_cat).float().to(W_enc.device)
         z_t = torch.relu(x_t @ W_enc.T + b_enc)
+        if topk_k is not None:
+            topk_vals, topk_idx = z_t.topk(topk_k, dim=-1)
+            z_t = torch.zeros_like(z_t)
+            z_t.scatter_(-1, topk_idx, topk_vals)
     z_cat = z_t.cpu().numpy().astype(np.float32)
     out, off = [], 0
     for s in sizes:
@@ -227,13 +218,14 @@ class DynamicBatchPrefetcher:
 
     def __init__(self, accs, seqs, esm_model, converter, backend,
                  device, W_enc, b_enc, layer=33, max_len=1022,
-                 batch_size=16, bucket_width=64, buffer_size=384):
+                 batch_size=16, bucket_width=64, buffer_size=384, topk_k=None):
         self.q         = queue.Queue(maxsize=buffer_size)
         self._sentinel = object()
         threading.Thread(
             target=self._worker,
             args=(accs, seqs, esm_model, converter, backend,
-                  device, W_enc, b_enc, layer, max_len, batch_size, bucket_width),
+                  device, W_enc, b_enc, layer, max_len, batch_size, bucket_width,
+                  topk_k),
             daemon=True,
         ).start()
 
@@ -254,7 +246,8 @@ class DynamicBatchPrefetcher:
         return batches
 
     def _worker(self, accs, seqs, esm_model, converter, backend,
-                device, W_enc, b_enc, layer, max_len, batch_size, bucket_width):
+                device, W_enc, b_enc, layer, max_len, batch_size, bucket_width,
+                topk_k=None):
         batches  = self._make_batches(accs, seqs, max_len, batch_size, bucket_width)
         n_failed = 0
         for batch_data in batches:
@@ -262,7 +255,7 @@ class DynamicBatchPrefetcher:
                 emb_results = get_embedding_esm_batch(
                     batch_data, esm_model, converter, backend, device, layer, max_len)
                 z_list = encode_residues_batch(
-                    [e for _, e in emb_results], W_enc, b_enc)
+                    [e for _, e in emb_results], W_enc, b_enc, topk_k=topk_k)
                 for (acc, emb), z in zip(emb_results, z_list):
                     self.q.put((acc, emb, z, None))
             except Exception as e:
@@ -756,6 +749,7 @@ def _merge_shards(args):
         "n_annot_types":      results_df["annot_type"].nunique(),
         "n_robust_pairs":     len(robust),
         "n_novel_candidates": len(novel),
+        "topk_k":             topk_k,
     }, open(args.outdir / "run_metadata.json", "w"), indent=2)
 
     log.info(f"\n✅ Merge complete → {args.outdir}")
@@ -764,8 +758,27 @@ def _merge_shards(args):
     log.info(f"   novel_candidates.tsv         — {len(novel)} candidates")
 
 
+def _load_drains(outdir, shard_suffix):
+    """Load and merge all drain pickle files into a single records dict."""
+    import pickle
+    drains = sorted(outdir.glob(f"pass2_drain{shard_suffix}_*.pkl"))
+    if not drains:
+        raise FileNotFoundError(
+            f"No drain files (pass2_drain{shard_suffix}_*.pkl) in {outdir}")
+    records = defaultdict(lambda: defaultdict(list))
+    for dp in drains:
+        log.info(f"  Loading {dp.name} ...")
+        with open(dp, "rb") as f:
+            d = pickle.load(f)
+        for fid, annot_dict in d["records"].items():
+            for annot_type, recs in annot_dict.items():
+                records[fid][annot_type].extend(recs)
+    log.info(f"  Loaded {len(drains)} drain(s)")
+    return records
+
+
 def _aggregate_and_save(records, eval_feature_ids, feat_mean, feat_var,
-                        args, n_processed):
+                        args, n_processed, topk_k=None):
     """Aggregate per-protein records and write all output files."""
     log.info("\nAggregating and saving results ...")
 
@@ -851,6 +864,7 @@ def _aggregate_and_save(records, eval_feature_ids, feat_mean, feat_var,
         "n_annot_types":      len(set(results_df["annot_type"])),
         "n_robust_pairs":     len(robust),
         "n_novel_candidates": len(novel),
+        "topk_k":             topk_k,
     }, open(args.outdir / "run_metadata.json", "w"), indent=2)
 
     log.info(f"   alignment_scores.parquet     — {len(results_df):,} pairs")
@@ -884,7 +898,7 @@ def main():
 
     # ── load models ───────────────────────────────────────────────────────────
     log.info("Loading SAE ...")
-    W_enc, b_enc, K, D = load_sae_encoder(args.checkpoint, device)
+    W_enc, b_enc, K, D, topk_k = load_sae_encoder(args.checkpoint, device)
     esm_model, converter, backend = load_esm2(args.esm2_model, device)
 
     # ── load data ─────────────────────────────────────────────────────────────
@@ -966,6 +980,7 @@ def main():
             batch_size=args.esm_batch_size,
             bucket_width=args.bucket_width,
             buffer_size=prefetch_buffer,
+            topk_k=topk_k,
         )
         for acc, emb, z, err in p1:
             if pbar1: pbar1.update(1)
@@ -1045,6 +1060,7 @@ def main():
         batch_size=args.esm_batch_size,
         bucket_width=args.bucket_width,
         buffer_size=prefetch_buffer,
+        topk_k=topk_k,
     )
 
     pbar2 = (_tqdm(total=len(target_accs_shard), desc="Pass 2", initial=resume_from,
@@ -1147,7 +1163,7 @@ def main():
     # ══════════════════════════════════════════════════════════════════════════
     records = _load_drains(args.outdir, shard_suffix)
     _aggregate_and_save(records, eval_feature_ids, feat_mean, feat_var,
-                        args, n_processed)
+                        args, n_processed, topk_k=topk_k)
     log.info(f"\n✅ Done → {args.outdir}")
 
 

@@ -1,0 +1,31 @@
+KEY FINDINGS — PIPLV2 Split Analysis
+==================================================
+
+  Train:  402,254 proteins (70.0%), 54,845 clusters
+  Val  :   86,972 proteins (15.1%), 11,025 clusters
+  Test :   85,401 proteins (14.9%), 11,244 clusters
+
+  Median protein length [train]: 299 aa
+  Median protein length [val]: 281 aa
+  Median protein length [test]: 292 aa
+
+  Total clusters      : 77,114
+  Singleton clusters  : 42,512 (55.1%)
+  Largest cluster     : 1,670 proteins
+
+  ✅ No homology leakage detected (all clusters confined to one split)
+  ✅ No duplicate accessions in protein table
+  ✅ No protein appears in more than one split
+
+  Expected annotation split proportions:
+    train: 0.714
+    val: 0.137
+    test: 0.149
+  Max annotation proportion deviation from expected (using actual annotation split proportions): 0.092
+  ⚠  Some feature types are unevenly distributed across splits
+  Top 5 most uneven feature types:
+    Sequence uncertainty: max deviation 0.092
+    Non-standard residue: max deviation 0.086
+    Non-adjacent residues: max deviation 0.066
+    Site: max deviation 0.042
+    Disulfide bond: max deviation 0.039

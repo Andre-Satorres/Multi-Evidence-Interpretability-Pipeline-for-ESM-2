@@ -1,0 +1,3 @@
+epoch,l1_eff,train_recon,train_l1,train_sparsity,train_dead_frac,val_recon,val_r2,alive_frac,ever_active_frac,elapsed_s
+1,1.50e-05,0.012342,0.088022,0.2709,0.1987,0.002242,0.9430,0.9467,1.0000,378
+2,3.00e-05,0.000858,0.112693,0.2504,0.6394,0.000838,0.9787,0.3676,1.0000,378

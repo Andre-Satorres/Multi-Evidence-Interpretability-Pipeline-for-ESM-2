@@ -1,0 +1,19 @@
+{
+  "feature_id": 8537,
+  "annot_type": "DNA binding: ETS",
+  "auprc_mean": 0.856430998586473,
+  "odds_ratio": 33.75509337860781,
+  "fisher_p": 1.7821403689385263e-168,
+  "n_proteins": 32,
+  "pc_top_property": "volume",
+  "pc_top_cohen_d": 0.4390055490328094,
+  "pc_n_strong": 5,
+  "abl_mean_contrast": 0.26342787907924503,
+  "abl_frac_positive": 1.0,
+  "abl_mean_cohen_d": 2.109785732939002,
+  "abl_structural_align": 0.02823139930177699,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.8520710952225186
+}

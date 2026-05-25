@@ -1,0 +1,19 @@
+{
+  "feature_id": 8657,
+  "annot_type": "DNA binding: T-box",
+  "auprc_mean": 0.9312156884011878,
+  "odds_ratio": 88.30064899523028,
+  "fisher_p": 0.0,
+  "n_proteins": 50,
+  "pc_top_property": "volume",
+  "pc_top_cohen_d": 0.3749506069485413,
+  "pc_n_strong": 3,
+  "abl_mean_contrast": 0.36225162403658034,
+  "abl_frac_positive": 1.0,
+  "abl_mean_cohen_d": 1.5417621611558794,
+  "abl_structural_align": 0.039556512499743186,
+  "logit_mean_contrast": NaN,
+  "logit_frac_positive": NaN,
+  "conv_n_features": 10,
+  "conv_top_auprc": 0.9293560784529237
+}
