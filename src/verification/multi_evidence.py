@@ -87,20 +87,19 @@ CHARGE = {
 AROMATICITY = {aa: 1 if aa in ('F','Y','W','H') else 0
                for aa in 'ACDEFGHIKLMNPQRSTVWY'}
 
-# Helix propensity (Chou-Fasman, normalised 0-1)
+# Chou-Fasman conformational propensities (1974), valores originais
+# Fonte: Chou, P.Y. & Fasman, G.D. (1974a). Biochemistry, 13(2), 211-222.
 HELIX_PROP = {
-    'A': 1.0,  'R': 0.79, 'N': 0.23, 'D': 0.69, 'C': 0.77,
-    'Q': 0.98, 'E': 1.0,  'G': 0.0,  'H': 0.69, 'I': 1.0,
-    'L': 1.0,  'K': 0.74, 'M': 1.0,  'F': 0.92, 'P': 0.0,
-    'S': 0.0,  'T': 0.64, 'W': 0.92, 'Y': 0.72, 'V': 0.91,
+    'A': 1.42, 'R': 0.98, 'N': 0.67, 'D': 1.01, 'C': 0.70,
+    'Q': 1.11, 'E': 1.51, 'G': 0.57, 'H': 1.00, 'I': 1.08,
+    'L': 1.21, 'K': 1.16, 'M': 1.45, 'F': 1.13, 'P': 0.57,
+    'S': 0.77, 'T': 0.83, 'W': 1.08, 'Y': 0.69, 'V': 1.06,
 }
-
-# Sheet propensity (Chou-Fasman, normalised 0-1)
 SHEET_PROP = {
-    'A': 0.37, 'R': 0.90, 'N': 0.37, 'D': 0.40, 'C': 1.0,
-    'Q': 0.87, 'E': 0.26, 'G': 0.75, 'H': 0.87, 'I': 1.0,
-    'L': 0.87, 'K': 0.37, 'M': 0.75, 'F': 1.0,  'P': 0.0,
-    'S': 0.75, 'T': 1.0,  'W': 1.0,  'Y': 1.0,  'V': 1.0,
+    'A': 0.83, 'R': 0.93, 'N': 0.89, 'D': 0.54, 'C': 1.19,
+    'Q': 1.10, 'E': 0.37, 'G': 0.75, 'H': 0.87, 'I': 1.60,
+    'L': 1.30, 'K': 0.74, 'M': 1.05, 'F': 1.38, 'P': 0.55,
+    'S': 0.75, 'T': 1.19, 'W': 1.37, 'Y': 1.47, 'V': 1.70,
 }
 
 # Disorder propensity (high = more disordered, from IUPred-like scales)
