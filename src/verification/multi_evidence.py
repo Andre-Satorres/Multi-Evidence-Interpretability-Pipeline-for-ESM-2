@@ -84,38 +84,37 @@ CHARGE = {
 }
 
 # Aromaticity (1 = aromatic)
-AROMATICITY = {aa: 1 if aa in ('F','Y','W','H') else 0
+AROMATICITY = {aa: 1 if aa in ('F','Y','W') else 0
                for aa in 'ACDEFGHIKLMNPQRSTVWY'}
 
-# Chou-Fasman conformational propensities (1974), valores originais
-# Fonte: Chou, P.Y. & Fasman, G.D. (1974a). Biochemistry, 13(2), 211-222.
+# Helix propensity (Pace & Scholtz, 1998) — kcal/mol, menor = mais favorável
+# Nota: escala original não inclui Prolina (estruturalmente incompatível com hélice)
 HELIX_PROP = {
-    'A': 1.42, 'R': 0.98, 'N': 0.67, 'D': 1.01, 'C': 0.70,
-    'Q': 1.11, 'E': 1.51, 'G': 0.57, 'H': 1.00, 'I': 1.08,
-    'L': 1.21, 'K': 1.16, 'M': 1.45, 'F': 1.13, 'P': 0.57,
-    'S': 0.77, 'T': 0.83, 'W': 1.08, 'Y': 0.69, 'V': 1.06,
+    'A': 0.00, 'L': 0.21, 'R': 0.21, 'M': 0.24, 'K': 0.26,
+    'Q': 0.39, 'E': 0.40, 'I': 0.41, 'W': 0.49, 'S': 0.50,
+    'Y': 0.53, 'F': 0.54, 'V': 0.61, 'H': 0.61, 'N': 0.65,
+    'T': 0.66, 'C': 0.68, 'D': 0.69, 'G': 1.00,
+    # 'P': sem valor experimental nesta escala, tratar separadamente
 }
+
+# Beta-sheet propensity (thermodynamic scale, Kim & Berg, 1993)
+# Fonte: Kim, C.A. & Berg, J.M. (1993). Nature, 362, 267-270.
+# AAindex: KIMC930101 — valores mais negativos = mais favorável à folha-beta
 SHEET_PROP = {
-    'A': 0.83, 'R': 0.93, 'N': 0.89, 'D': 0.54, 'C': 1.19,
-    'Q': 1.10, 'E': 0.37, 'G': 0.75, 'H': 0.87, 'I': 1.60,
-    'L': 1.30, 'K': 0.74, 'M': 1.05, 'F': 1.38, 'P': 0.55,
-    'S': 0.75, 'T': 1.19, 'W': 1.37, 'Y': 1.47, 'V': 1.70,
+    'A': -0.35, 'R': -0.44, 'N': -0.38, 'D': -0.41, 'C': -0.47,
+    'Q': -0.40, 'E': -0.41, 'G':  0.00, 'H': -0.46, 'I': -0.56,
+    'L': -0.48, 'K': -0.41, 'M': -0.46, 'F': -0.55, 'P': -0.23,
+    'S': -0.39, 'T': -0.48, 'W': -0.48, 'Y': -0.50, 'V': -0.53,
 }
 
-# Disorder propensity (high = more disordered, from IUPred-like scales)
+# Disorder propensity (TOP-IDP scale, Campen et al., 2008)
+# Fonte: Campen, A. et al. (2008). Protein & Peptide Letters, 15(9), 956-963.
+# Valores mais negativos = promovem ordem; mais positivos = promovem desordem
 DISORDER_PROP = {
-    'A': 0.06, 'R': 0.18, 'N': 0.21, 'D': 0.23, 'C': 0.02,
-    'Q': 0.20, 'E': 0.22, 'G': 0.13, 'H': 0.08, 'I': 0.01,
-    'L': 0.02, 'K': 0.20, 'M': 0.04, 'F': 0.02, 'P': 0.27,
-    'S': 0.18, 'T': 0.14, 'W': 0.02, 'Y': 0.05, 'V': 0.01,
-}
-
-# Polarity (Grantham scale, normalised 0-1)
-POLARITY = {
-    'A': 0.0,  'R': 0.65, 'N': 0.68, 'D': 0.68, 'C': 0.28,
-    'Q': 0.68, 'E': 0.68, 'G': 0.0,  'H': 0.68, 'I': 0.13,
-    'L': 0.13, 'K': 0.65, 'M': 0.28, 'F': 0.28, 'P': 0.28,
-    'S': 0.62, 'T': 0.62, 'W': 0.56, 'Y': 0.56, 'V': 0.13,
+    'W': -0.884, 'F': -0.697, 'Y': -0.510, 'I': -0.486, 'M': -0.397,
+    'L': -0.326, 'V': -0.121, 'N':  0.007, 'C':  0.020, 'T':  0.059,
+    'A':  0.060, 'G':  0.166, 'R':  0.180, 'D':  0.192, 'H':  0.303,
+    'Q':  0.318, 'K':  0.586, 'S':  0.341, 'E':  0.736, 'P':  0.987,
 }
 
 PROPERTIES = {
@@ -126,18 +125,22 @@ PROPERTIES = {
     "helix_prop":     HELIX_PROP,
     "sheet_prop":     SHEET_PROP,
     "disorder_prop":  DISORDER_PROP,
-    "polarity":       POLARITY,
+    # "polarity":       POLARITY, removida por ser redundante com hydrophobicity
 }
 
-
 def seq_to_properties(seq: str) -> dict[str, np.ndarray]:
-    """Convert amino acid sequence to per-residue property arrays."""
+    """Convert amino acid sequence to per-residue property arrays.
+
+    Resíduos sem valor definido em uma escala específica (ex.: Prolina em
+    HELIX_PROP; códigos especiais X/B/Z/U/O em qualquer propriedade) recebem
+    NaN, e devem ser excluídos explicitamente do cálculo de evidência para
+    aquela propriedade -- nunca substituídos por um valor numérico arbitrário.
+    """
     out = {}
     for name, table in PROPERTIES.items():
-        arr = np.array([table.get(aa, 0.0) for aa in seq], dtype=np.float32)
+        arr = np.array([table.get(aa, np.nan) for aa in seq], dtype=np.float32)
         out[name] = arr
     return out
-
 
 # =============================================================================
 #  CLI
@@ -387,18 +390,20 @@ def physicochemical_evidence(
         vo = np.array(prop_out[pname])
         va = np.array(prop_act_hi[pname])
         vb = np.array(prop_act_lo[pname])
-
-        if len(vi) == 0 or len(vo) == 0:
-            continue
-
-        mi, mo = vi.mean(), vo.mean()
-        si, so = vi.std() + 1e-8, vo.std() + 1e-8
+    
+        # contar apenas valores válidos (não-NaN) para decidir se há dado suficiente
+        n_vi, n_vo = np.sum(~np.isnan(vi)), np.sum(~np.isnan(vo))
+        if n_vi < 2 or n_vo < 2:
+            continue  # dado insuficiente após excluir NaNs -- não confiável
+    
+        mi, mo = np.nanmean(vi), np.nanmean(vo)
+        si, so = np.nanstd(vi) + 1e-8, np.nanstd(vo) + 1e-8
         pooled_std = np.sqrt((si**2 + so**2) / 2)
         cohen_d = (mi - mo) / pooled_std
-
-        ma = va.mean() if len(va) > 0 else float("nan")
-        mb = vb.mean() if len(vb) > 0 else float("nan")
-        act_cohen_d = ((ma - mb) / pooled_std) if not np.isnan(ma) else float("nan")
+    
+        ma = np.nanmean(va) if np.sum(~np.isnan(va)) >= 2 else float("nan")
+        mb = np.nanmean(vb) if np.sum(~np.isnan(vb)) >= 2 else float("nan")
+        act_cohen_d = (ma - mb) / pooled_std if not (np.isnan(ma) or np.isnan(mb)) else float("nan")
 
         rows.append({
             "property":       pname,
