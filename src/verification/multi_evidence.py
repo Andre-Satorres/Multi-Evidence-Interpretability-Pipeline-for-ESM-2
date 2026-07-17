@@ -93,8 +93,7 @@ HELIX_PROP = {
     'A': 0.00, 'L': 0.21, 'R': 0.21, 'M': 0.24, 'K': 0.26,
     'Q': 0.39, 'E': 0.40, 'I': 0.41, 'W': 0.49, 'S': 0.50,
     'Y': 0.53, 'F': 0.54, 'V': 0.61, 'H': 0.61, 'N': 0.65,
-    'T': 0.66, 'C': 0.68, 'D': 0.69, 'G': 1.00,
-    # 'P': sem valor experimental nesta escala, tratar separadamente
+    'T': 0.66, 'C': 0.68, 'D': 0.69, 'G': 1.00, 'P': 3.16
 }
 
 # Beta-sheet propensity (thermodynamic scale, Kim & Berg, 1993)
